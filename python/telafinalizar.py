@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import json
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -23,6 +24,20 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_telafinalizar(object):
+
+    def __init__ (self,x,c):
+        self.x=x
+        self.T=0
+        self.P=0
+        self.c=c
+
+
+    def fim(self):
+        d['clientes'][self.x]['pedido']=lc
+        d['cozinheiro'][self.c]['pedido']=lc
+        
+
+
     def setupUi(self, telafinalizar):
         telafinalizar.setObjectName(_fromUtf8("telafinalizar"))
         telafinalizar.resize(676, 668)
@@ -53,14 +68,14 @@ class Ui_telafinalizar(object):
         self.label_5.setFont(font)
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.ltempo = QtGui.QLabel(telafinalizar)
-        self.ltempo.setGeometry(QtCore.QRect(460, 250, 61, 16))
+        self.ltempo.setGeometry(QtCore.QRect(460, 250, 180, 16))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Trebuchet MS"))
         font.setPointSize(10)
         self.ltempo.setFont(font)
         self.ltempo.setObjectName(_fromUtf8("ltempo"))
         self.lpreco = QtGui.QLabel(telafinalizar)
-        self.lpreco.setGeometry(QtCore.QRect(460, 190, 53, 16))
+        self.lpreco.setGeometry(QtCore.QRect(460, 190, 180, 25))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Trebuchet MS"))
         font.setPointSize(10)
@@ -76,6 +91,43 @@ class Ui_telafinalizar(object):
         self.line_2.setFrameShape(QtGui.QFrame.HLine)
         self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
         self.line_2.setObjectName(_fromUtf8("line_2"))
+        self.label = QtGui.QLabel(telafinalizar)
+        self.label.setGeometry(QtCore.QRect(550, 190, 53, 16))
+        self.label.setObjectName(_fromUtf8("label"))
+        self.label_2 = QtGui.QLabel(telafinalizar)
+        self.label_2.setGeometry(QtCore.QRect(550, 250, 53, 16))
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+
+
+############
+
+        #self.carrinhoww.setText('')
+
+        with open('dict.json','r') as cf:
+            d=json.load(cf)
+
+        lc = d['clientes'][self.x]['temp']
+
+
+
+        for i in lc:
+            objeto = i
+            nn=objeto[2] #nome
+            pp=objeto[0] #preco
+            tt=objeto[1] #tempo de preparo
+            qq=objeto[3] #quantidade
+            self.T+=tt #tempo total
+            self.P+=pp #preco total
+                
+            self.carrinhoww.append('{0}     x{3} \n Preço: R${1:.2f} \n Tempo: {2} minutos \n' .format(nn,pp,tt,qq))
+
+        self.lpreco.setText('Preço :   R${0:.2f}' .format(self.P))
+        self.ltempo.setText('Tempo :   {0} minutos' .format(self.T))
+
+
+        self.bpedir.clicked.connect(self.fim)
+
+##############
 
         self.retranslateUi(telafinalizar)
         QtCore.QObject.connect(self.bvoltar, QtCore.SIGNAL(_fromUtf8("clicked()")), telafinalizar.close)
@@ -83,16 +135,10 @@ class Ui_telafinalizar(object):
 
     def retranslateUi(self, telafinalizar):
         telafinalizar.setWindowTitle(_translate("telafinalizar", "PyFood", None))
-        self.carrinhoww.setHtml(_translate("telafinalizar", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Trebuchet MS\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt;\">PRODUTOSSSS</span></p></body></html>", None))
         self.bvoltar.setText(_translate("telafinalizar", "Voltar", None))
         self.bpedir.setText(_translate("telafinalizar", "Pedir", None))
         self.label_5.setText(_translate("telafinalizar", "Finalizar Pedido", None))
-        self.ltempo.setText(_translate("telafinalizar", "Tempo :", None))
-        self.lpreco.setText(_translate("telafinalizar", "Preço : ", None))
+
 
 
 if __name__ == "__main__":

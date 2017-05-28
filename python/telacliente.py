@@ -7,49 +7,20 @@
 # WARNING! All changes made in this file will be lost!
 
 
-class comida:
-        def __init__(self,preco,tempo,nome):
-            self.p=preco
-            self.t=tempo
-            self.n=nome
 
 
-bolo = comida(15,20,'Bolo de Cenoura')
-arroz = comida(7,25,'Arroz Branco')
-feijao = comida(8,24,'Feijao Carioca')
-
-d={
-    'clientes': {
-    '':{
-    'nome': 'elijose',
-    'email': 'elijose55',
-    'senha': '',
-    'bairro': 'juruce',
-    'celular': '976678686',
-    }
-
-    },
-
-    'cozinheiro': {
-    'a':{
-    'nome': 'elijose',
-    'email': 'elijose55',
-    'senha': '',
-    'bairro': 'juruce',
-    'celular': '976678686',
-    'restaurante': 'asterix',
-    'descricao': 'Comida boa e caseira focada em massas e paes',
-    'cardapio': [bolo,arroz,feijao]
-    }
-      }
-      }
     
 
-x='' ##trocar para o login do cliente que logou
+
 
 
 from PyQt4 import QtCore, QtGui
 from telafinalizar import Ui_telafinalizar
+import json
+
+
+with open('dict.json','r') as cf:
+    d=json.load(cf)
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -66,23 +37,31 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_telacliente(object):
-    def __init__ (self):
+    def __init__ (self,x):
         self.T=0
         self.P=0
+        self.pedidotemp=[]
+        self.c=''
+        self.x=x  #cliente logado
 
 
 
-    def bairro(self):
+
+    def bairro(self): ##obter os restaurantes que estao no mesmo bairro do cliente
+        self.pedidotemp=[]
         r=[]
-        n=[]
+        ww=[]
+
+        with open('dict.json','r') as cf:
+            d=json.load(cf)
 
 
-        b=d['clientes'][x]['bairro']
+        b=d['clientes'][self.x]['bairro']
         for i in d['cozinheiro']:
-            if b==d['cozinheiro'][i]['bairro']:
-                n.append((i,d['cozinheiro'][i]['restaurante']))
+            if b==d['cozinheiro'][i]['bairro'] and d['cozinheiro'][i]['status']=='online':
+                ww.append((i,d['cozinheiro'][i]['restaurante']))
                 r.append(d['cozinheiro'][i]['restaurante'])
-        return n
+        return ww
 
         ##mostrar r na lista de restaurantes proximos
         
@@ -90,15 +69,15 @@ class Ui_telacliente(object):
 
 
 
-    def khara(self,item):
+    def khara(self,item): ##definir o nome do dicionario do dicionario escolhido
             for name in d['cozinheiro']:
                 if d['cozinheiro'][name]['restaurante'] == item:
                     nm = name
+                    self.c=nm
                     return nm
 
+    def retirar(self): #quando o botao retirar for acionado
 
-    def add(self): ##quando o botao adicionar for acionado
-        
 
 
         v=self.nquantidade.value() ##valor do seletor da quantidade de pratos
@@ -107,11 +86,97 @@ class Ui_telacliente(object):
 
         index=self.scomidas.currentIndex() ##retorna o indice na lista da comida selecionada
 
-        df=listo[index] ## df= objeto comida adicionado ao carrinho
+        lc=d['cozinheiro'][nm]['cardapio'][:]
+
+        df=lc[index][:] ## df= lista da comida a ser retirada
+
+        dt=df[:]
+
         if v!=0:
-            self.carrinhoww.append('{0} X{3} \n Preço: R${1} \n Tempo: {2} minutos \n' .format(df.n,df.p,df.t,v)) ##
-        self.T+=(df.t)*v
-        self.P+=(df.p)*v
+
+            self.T=0
+            self.P=0
+
+            self.carrinhoww.setText('')
+
+            for i in self.pedidotemp: 
+                itemp=i
+                if it in itemp:
+                    itemp[3]-=v #retirando a quantidade
+                    if itemp[3]<=0:
+                        self.pedidotemp.remove(itemp) #se a quantidade final for menor que 0 o item e retirado do carrinho
+                    itemp[0]-=df[0]*v #retirando do preco
+                    itemp[1]-=df[1]*v #retirando do tempo
+
+            for i in self.pedidotemp:
+                objeto = i
+                nn=objeto[2] #nome
+                pp=objeto[0] #preco
+                tt=objeto[1] #tempo de preparo
+                qq=objeto[3] #quantidade
+                self.T+=tt #tempo total
+                self.P+=pp #preco total
+                
+                self.carrinhoww.append('{0}     x{3} \n Preço: R${1:.2f} \n Tempo: {2} minutos \n' .format(nn,pp,tt,qq)) ##printar os dados de cada lista de comidas no box do carrinho
+
+
+        self.TEMPOW.setText('{0}' .format(self.T))
+
+
+
+
+    def add(self): ##quando o botao adicionar for acionado
+
+
+        
+
+ 
+
+        v=self.nquantidade.value() ##valor do seletor da quantidade de pratos
+
+        it=self.scomidas.currentText() ##retorna o texto atual do seletor de comida
+
+        index=self.scomidas.currentIndex() ##retorna o indice na lista da comida selecionada
+
+        lc=d['cozinheiro'][nm]['cardapio'][:]
+
+        df=lc[index][:] ## df= lista da comida adicionada ao carrinho
+
+        dt=df[:]
+
+        if v!=0:
+            self.carrinhoww.setText('')
+            xtemp=0
+
+            self.T=0
+            self.P=0
+
+            for i in self.pedidotemp:
+                itemp=i
+                if it in itemp:
+                    itemp[3]+=v #adicionado a quantidade
+                    itemp[0]+=df[0]*v #adicionando ao preco
+                    itemp[1]+=df[1]*v #adicionando ao tempo
+                    xtemp=1
+
+
+            if xtemp==0:
+                dt[0]*=v #mudando o preco total
+                dt[1]*=v #mudando o tempo total
+                dt.append(v) #adicionando a quantidade
+                self.pedidotemp.append(dt) #adicionando a lista da comida ao pedido temporario
+
+
+            for i in self.pedidotemp:
+                objeto = i
+                nn=objeto[2] #nome
+                pp=objeto[0] #preco
+                tt=objeto[1] #tempo de preparo
+                qq=objeto[3] #quantidade
+                self.T+=tt #tempo total
+                self.P+=pp #preco total
+                
+                self.carrinhoww.append('{0}     x{3} \n Preço: R${1:.2f} \n Tempo: {2} minutos \n' .format(nn,pp,tt,qq)) ##printar os dados de cada lista de comidas no box do carrinho
 
 
         self.TEMPOW.setText('{0}' .format(self.T))
@@ -123,6 +188,7 @@ class Ui_telacliente(object):
 
 
     def getitem(self):
+        self.pedidotemp=[]
         self.carrinhoww.setText('')
         item=self.srestaurante.currentText()
         global nm
@@ -141,35 +207,42 @@ class Ui_telacliente(object):
         font.setFamily(_fromUtf8("Trebuchet MS"))
         font.setPointSize(11)
         self.descricaowrest.setFont(font)
-        self.descricaowrest.setText(d['cozinheiro'][nm]['descricao'])
+        self.descricaowrest.setText(d['cozinheiro'][nm]['descricao']) #printar descricao do restaurante no box de descricao
 
 
         self.cardapioww.setFont(font)
         lc=d['cozinheiro'][nm]['cardapio']
         self.cardapioww.setText('')
+
         for i in lc:
             objeto = i
-            ##printar os dados de cada objeto comida da lista que esta no cardapio no box da pagina
-            nn=objeto.n
-            pp=objeto.p
-            tt=objeto.t
+
+            
+            nn=objeto[2] #nome
+            pp=objeto[0] #preco
+            tt=objeto[1] #tempo de preparo
+
+            self.scomidas.addItem(nn)  #adicionando as comidas na lista de selecao de comidas
             
            
-            self.cardapioww.append('{0} \n Preço: R${1} \n Tempo: {2} minutos \n' .format(nn,pp,tt))
+            self.cardapioww.append('{0} \n Preço: R${1:.2f} \n Tempo: {2} minutos \n' .format(nn,pp,tt)) ##printar os dados de cada lista de comidas no box do cardapio
 
-        global listo
-        listo = d['cozinheiro'][nm]['cardapio']
+        self.nquantidade.setMinimum(0)
 
-
-        for item in listo:
-            self.scomidas.addItem(item.n)
-
+        self.nquantidade.setMaximum(10)
 
 
 
     def finalizar(self):
+
+
+        d['clientes'][self.x]['temp'] = self.pedidotemp
+
+        with open('dict.json','w') as file:
+            json.dump(d, file, indent=1)
+
         self.final = QtGui.QMainWindow()
-        self.ui= Ui_telafinalizar()
+        self.ui= Ui_telafinalizar(self.x,self.c)
         self.ui.setupUi(self.final)
         self.final.show()
 
@@ -204,16 +277,6 @@ class Ui_telacliente(object):
         self.srestaurante.setFont(font)
         self.srestaurante.setObjectName(_fromUtf8("srestaurante"))
         self.combo = QtGui.QLabel('')
-
-
-        lista = self.bairro()
-
-
-        for item in lista:
-            self.srestaurante.addItem(item[1])
-
-        
-
         self.bselecionar = QtGui.QPushButton(self.centralwidget)
         self.bselecionar.setGeometry(QtCore.QRect(80, 340, 93, 28))
         font = QtGui.QFont()
@@ -254,12 +317,6 @@ class Ui_telacliente(object):
         self.scomidas = QtGui.QComboBox(self.centralwidget)
         self.scomidas.setGeometry(QtCore.QRect(960, 300, 201, 21))
         self.scomidas.setObjectName(_fromUtf8("scomidas"))
-
-
-
-
-
-
         self.label_5 = QtGui.QLabel(self.centralwidget)
         self.label_5.setGeometry(QtCore.QRect(960, 220, 391, 51))
         font = QtGui.QFont()
@@ -315,7 +372,15 @@ class Ui_telacliente(object):
         self.bselecionar.clicked.connect(self.getitem)
 
         self.badicionar.clicked.connect(self.add)
-        #self.badicionar_2.clicked.connect(self.getitem)
+
+        self.badicionar_2.clicked.connect(self.retirar)
+
+        lista = self.bairro()
+        print(lista)
+
+
+        for item in lista:
+            self.srestaurante.addItem(item[1])
 
     def retranslateUi(self, telacliente):
         telacliente.setWindowTitle(_translate("telacliente", "PyFood", None))
@@ -332,7 +397,7 @@ class Ui_telacliente(object):
         self.badicionar.setText(_translate("telacliente", "Adicionar", None))
         self.bfinalizar.setText(_translate("telacliente", "Finalizar", None))
         self.label_3.setText(_translate("telacliente", "Tempo: ", None))
-        self.TEMPOW.setText(_translate("telacliente", "TEMPOOO", None))
+        self.TEMPOW.setText(_translate("telacliente", "", None))
         self.badicionar_2.setText(_translate("telacliente", "Retirar", None))
         self.menuOp_es.setTitle(_translate("telacliente", "Opções", None))
         self.blogout.setText(_translate("telacliente", "Logout", None))

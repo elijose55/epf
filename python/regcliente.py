@@ -7,9 +7,11 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import json
 
 
-
+with open('dict.json','r') as cf:
+    d=json.load(cf)
 
 
 try:
@@ -28,6 +30,7 @@ except AttributeError:
 
 class Ui_regcliente(object):
 
+
     def erro(self):
         msg=QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Warning)
@@ -39,37 +42,47 @@ class Ui_regcliente(object):
     def registro(self):
             x = self.tlogin.text()
             x = str(x)
-            if x not in d['clientes']:
+            if x not in d['clientes'] and x not in d['cozinheiro']:
                 d['clientes'][x]={}
 
-                username = self.tnome.text()
-                username = str(username)
-                d['clientes'][x]['nome']=username
+                temp = self.tnome.text()
+                temp = str(temp)
+                d['clientes'][x]['nome']=temp
 
-                username = self.temail.text()
-                username = str(username)
-                d['clientes'][x]['email']=username
+                temp = self.temail.text()
+                temp = str(temp)
+                d['clientes'][x]['email']=temp
 
-                username = self.tsenha.text()
-                username = str(username)
-                d['clientes'][x]['senha']=username
+                temp = self.tsenha.text()
+                temp = str(temp)
+                d['clientes'][x]['senha']=temp
 
-                username = self.tbairro.text()
-                username = str(username)
-                username = username.lstrip()
-                username = username.lower()
-                username = username.title()
-                d['clientes'][x]['bairro']=username
+                temp = self.tbairro.text()
+                temp = str(temp)
+                temp = temp.lstrip()
+                temp = temp.lower()
+                temp = temp.title()
+                d['clientes'][x]['bairro']=temp
 
-                username = self.tcelular.text()
-                username = str(username)
-                d['clientes'][x]['celular']=username
+                temp = self.tcelular.text()
+                temp = str(temp)
+                d['clientes'][x]['celular']=temp
+
+                with open('dict.json','w') as file:
+                    json.dump(d, file, indent=1)
+
+                msg=QtGui.QMessageBox()
+                msg.setIcon(QtGui.QMessageBox.Information)
+                msg.setWindowTitle('Aviso')
+                msg.setText('Registro Bem-Sucedido')
+                msg.setStandardButtons(QtGui.QMessageBox.Ok)
+                msg.exec_()
 
                 self.telalog = QtGui.QMainWindow()
                 self.ui= Ui_tlogin()
                 self.ui.setupUi(self.telalog)
                 self.telalog.show()
-                telareg.close()
+                self.telareg.close()
 
             else:
                 self.erro()

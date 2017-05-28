@@ -7,39 +7,13 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-d={
-    'clientes': {
-    '':{
-    'nome': 'elijose',
-    'email': 'elijose55',
-    'senha': '',
-    'bairro': 'juruce',
-    'celular': '976678686',
-    }
+from usuario import Ui_usuario
+import json
 
-    },
-
-    'cozinheiro': {
-    'a':{
-    'nome': 'elijose',
-    'email': 'elijose55',
-    'senha': '',
-    'bairro': 'juruce',
-    'celular': '976678686',
-    'restaurante': 'asterix',
-    'descricao': 'Comida boa e caseira focada em massas e paes',
-    'cardapio': []
-    }
-      }
-      }
+with open('dict.json','r') as cf:
+    d=json.load(cf)
 
 x='a'  ##colocar aqui o nome do usuario que entrou
-
-class comida:
-        def __init__(self,preco,tempo,nome):
-            self.p=preco
-            self.t=tempo
-            self.n=nome
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -58,21 +32,71 @@ except AttributeError:
 
 class Ui_telacardapio(object):
 
+    def __init__ (self):
+        self.ltemp=[]
+
+    def usuario(self):
+
+        self.user = QtGui.QMainWindow()
+        self.ui= Ui_usuario(x)
+        self.ui.setupUi(self.user)
+        self.user.show()
+        self.Ui_usuariocliente.close()
+
     def criar(self):
+
         pt = self.tprato.text()
         pt = str(pt)
         pr = self.tpreco.text()
+        pr = pr.replace(',', '.')
         pr = float(pr)
+
         tt = self.ttempo.text()
         tt = int(tt)
-        food = comida(pr,tt,pt)
-        (d['cozinheiro'][x]['cardapio']).append(food)
+        lfood = [pr,tt,pt]
+
+        (d['cozinheiro'][x]['cardapio']).append(lfood)
+
         print(d['cozinheiro'][x]['cardapio'])
 
         self.textBrowser.setText('')
 
-        self.textBrowser.append('{0} \n Preço: R${1} \n Tempo: {2} minutos \n' .format(pt,pr,tt))
 
+        with open('dict.json','w') as file:
+            json.dump(d, file, indent=1)
+
+        lc=d['cozinheiro'][x]['cardapio']
+
+
+
+
+        for i in lc:
+            objeto = i
+
+            
+            nn = objeto[2] #nome
+            pp = objeto[0] #preco
+            tt = objeto[1] #tempo de preparo
+
+            
+           
+            self.textBrowser.append('{0} \n Preço: R${1:.2f} \n Tempo: {2} minutos \n' .format(nn,pp,tt))
+
+
+    def clean(self):
+
+        self.textBrowser.setText('')
+        d['cozinheiro'][x]['cardapio']=[]
+
+    def ativar(self):
+
+        if d['cozinheiro'][x]['status'] == 'online' :
+            self.blimpar_2.setText('Ativar')
+            d['cozinheiro'][x]['status'] = 'offline'
+
+        elif d['cozinheiro'][x]['status'] == 'offline' :
+            self.blimpar_2.setText('Desativar')
+            d['cozinheiro'][x]['status'] = 'online'
 
 
 
@@ -175,12 +199,18 @@ class Ui_telacardapio(object):
         self.menuOpcoes.addAction(self.busuario)
         self.menuOpcoes.addAction(self.bsair)
         self.menubar.addAction(self.menuOpcoes.menuAction())
-        
+
         font.setFamily(_fromUtf8("Trebuchet MS"))
         font.setPointSize(11)
         self.textBrowser.setFont(font)
 
         self.bcardapio.clicked.connect(self.criar)
+
+        self.blimpar.clicked.connect(self.clean)
+
+        self.blimpar_2.clicked.connect(self.ativar)
+
+        self.busuario.triggered.connect(self.usuario)
 
         self.retranslateUi(telacardapio)
         QtCore.QObject.connect(self.bsair, QtCore.SIGNAL(_fromUtf8("triggered()")), telacardapio.close)
@@ -189,23 +219,17 @@ class Ui_telacardapio(object):
 
     def retranslateUi(self, telacardapio):
         telacardapio.setWindowTitle(_translate("telacardapio", "PyFood", None))
-        self.bcardapio.setText(_translate("telacardapio", "ADICIONAR OU CRIAR", None))
+        self.bcardapio.setText(_translate("telacardapio", "Adicionar", None))
         self.label.setText(_translate("telacardapio", "Cardápio", None))
         self.label_8.setText(_translate("telacardapio", "Editar Cardápio", None))
         self.birpedidos.setText(_translate("telacardapio", "Pedidos", None))
         self.blimpar.setText(_translate("telacardapio", "Limpar", None))
-        self.blimpar_2.setText(_translate("telacardapio", "ATIVAR OU DESATIVAR", None))
-        self.textBrowser.setHtml(_translate("telacardapio", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">frango a milanesa   R$15,00   20 min</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;\"><br /></p></body></html>", None))
+        self.blimpar_2.setText(_translate("telacardapio", "Ativar", None))
         self.label_10.setText(_translate("telacardapio", "Tempo (min)", None))
         self.label_11.setText(_translate("telacardapio", " Preço (R$)", None))
         self.label_3.setText(_translate("telacardapio", " Prato", None))
         self.menuOpcoes.setTitle(_translate("telacardapio", "Opções", None))
-        self.busuario.setText(_translate("telacardapio", "Usuario", None))
+        self.busuario.setText(_translate("telacardapio", "Usuário", None))
         self.bsair.setText(_translate("telacardapio", "Sair", None))
 
 

@@ -8,32 +8,10 @@
 
 from PyQt4 import QtCore, QtGui
 
-d={
-    'clientes': {
-    'eli':{
-    'nome': 'elijose',
-    'email': 'elijose55',
-    'senha': 'elizao',
-    'bairro': 'juruce',
-    'celular': '976678686',
-    }
+import json
 
-    },
-
-    'cozinheiro': {
-    'a':{
-    'nome': 'elijose',
-    'email': 'elijose55',
-    'senha': '',
-    'bairro': 'juruce',
-    'celular': '976678686',
-    'restaurante': 'asterix',
-    'descricao': 'Comida boa e caseira focada em massas e paes',
-    'cardapio': ''
-    }
-      }
-      }
-    
+with open('dict.json','r') as cf:
+    d=json.load(cf)
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -62,55 +40,76 @@ class Ui_telareg(object):
     def registro(self):
             x = self.tlogin.text()
             x = str(x)
-            if x not in d['cozinheiro']:
+            if x not in d['cozinheiro'] and x not in d['clientes']:
                 d['cozinheiro'][x]={}
 
-                username = self.tnome.text()
-                username = str(username)
-                d['cozinheiro'][x]['nome']=username
+                temp = self.tnome.text()
+                temp = str(temp)
+                d['cozinheiro'][x]['nome']=temp
 
-                username = self.temail.text()
-                username = str(username)
-                d['cozinheiro'][x]['email']=username
+                temp = self.temail.text()
+                temp = str(temp)
+                d['cozinheiro'][x]['email']=temp
 
-                username = self.tsenha.text()
-                username = str(username)
-                d['cozinheiro'][x]['senha']=username
+                temp = self.tendereco.text()
+                temp = str(temp)
+                temp = temp.lower()
+                temp = temp.lstrip()
+                temp=temp.title()
+                temp=temp.split()
+                temp=' '.join(temp)
+                d['cozinheiro'][x]['endereco']=temp
 
-                username = self.tbairro.text()
-                username = str(username)
-                username = username.lstrip()
-                username = username.lower()
-                username = username.title()
-                d['cozinheiro'][x]['bairro']=username
+                temp = self.tsenha.text()
+                temp = str(temp)
+                d['cozinheiro'][x]['senha']=temp
 
-                username = self.tcelular.text()
-                username = str(username)
-                d['cozinheiro'][x]['celular']=username
+                temp = self.tbairro.text()
+                temp = str(temp)
+                temp = temp.lstrip()
+                temp = temp.lower()
+                temp = temp.title()
+                temp=temp.split()
+                temp=' '.join(temp)
+                d['cozinheiro'][x]['bairro']=temp
 
-                username = self.tnomerest.text()
-                username = str(username)
-                d['cozinheiro'][x]['restaurante']=username
+                temp = self.tcelular.text()
+                temp = str(temp)
+                d['cozinheiro'][x]['celular']=temp
 
-                username = self.tdescricao.text()
-                username = str(username)
-                d['cozinheiro'][x]['descricao']=username
+                temp = self.tnomerest.text()
+                temp = str(temp)
+                d['cozinheiro'][x]['restaurante']=temp
+
+                temp = self.tdescricao.text()
+                temp = str(temp)
+                d['cozinheiro'][x]['descricao']=temp
+
+                d['cozinheiro'][x]['status']='offline'
+
+                with open('dict.json','w') as file:
+                    json.dump(d, file, indent=1)
+
+                msg=QtGui.QMessageBox()
+                msg.setIcon(QtGui.QMessageBox.Information)
+                msg.setWindowTitle('Aviso')
+                msg.setText('Registro Bem-Sucedido')
+                msg.setStandardButtons(QtGui.QMessageBox.Ok)
+                msg.exec_()
 
                 print (d)
+
+                self.telalog = QtGui.QMainWindow()
+                self.ui= Ui_tlogin()
+                self.ui.setupUi(self.telalog)
+                self.telalog.show()
+                self.telareg.close()
+                print(d)
 
 
 
             else:
                 self.erro()
-
-            self.telalog = QtGui.QMainWindow()
-            self.ui= Ui_tlogin()
-            self.ui.setupUi(self.telalog)
-            self.telalog.show()
-            self.telareg.close
-            print(d)
-
-
 
     def setupUi(self, telareg):
         telareg.setObjectName(_fromUtf8("telareg"))
@@ -130,7 +129,7 @@ class Ui_telareg(object):
         self.label.setFont(font)
         self.label.setObjectName(_fromUtf8("label"))
         self.bregistar = QtGui.QPushButton(self.centralwidget)
-        self.bregistar.setGeometry(QtCore.QRect(440, 520, 111, 41))
+        self.bregistar.setGeometry(QtCore.QRect(440, 540, 111, 41))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Trebuchet MS"))
         font.setPointSize(10)
@@ -216,38 +215,17 @@ class Ui_telareg(object):
         self.tnomerest = QtGui.QLineEdit(self.centralwidget)
         self.tnomerest.setGeometry(QtCore.QRect(540, 340, 377, 22))
         self.tnomerest.setObjectName(_fromUtf8("tnomerest"))
-        self.label.raise_()
-        self.label_3.raise_()
-        self.bregistar.raise_()
-        self.label_2.raise_()
-        self.tlogin.raise_()
-        self.label_3.raise_()
-        self.tsenha.raise_()
-        self.label_4.raise_()
-        self.label_5.raise_()
-        self.temail.raise_()
-        self.tnome.raise_()
-        self.label_7.raise_()
-        self.label_6.raise_()
-        self.tdescricao.raise_()
-        self.label_8.raise_()
-        self.tcelular.raise_()
-        self.label_4.raise_()
-        self.tcelular.raise_()
-        self.label_3.raise_()
-        self.label_2.raise_()
-        self.tnome.raise_()
-        self.label_5.raise_()
-        self.label_7.raise_()
-        self.tbairro.raise_()
-        self.tsenha.raise_()
-        self.label_6.raise_()
-        self.tlogin.raise_()
-        self.label_8.raise_()
-        self.temail.raise_()
-        self.tdescricao.raise_()
-        self.label_9.raise_()
-        self.tnomerest.raise_()
+        self.tendereco = QtGui.QLineEdit(self.centralwidget)
+        self.tendereco.setGeometry(QtCore.QRect(70, 470, 379, 22))
+        self.tendereco.setText(_fromUtf8(""))
+        self.tendereco.setObjectName(_fromUtf8("tendereco"))
+        self.label_10 = QtGui.QLabel(self.centralwidget)
+        self.label_10.setGeometry(QtCore.QRect(70, 430, 379, 31))
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Trebuchet MS"))
+        font.setPointSize(9)
+        self.label_10.setFont(font)
+        self.label_10.setObjectName(_fromUtf8("label_10"))
         telareg.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(telareg)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 976, 26))
@@ -263,11 +241,12 @@ class Ui_telareg(object):
         self.menuOpcoes.addAction(self.bvoltar)
         self.menubar.addAction(self.menuOpcoes.menuAction())
 
+        self.bregistar.clicked.connect(self.registro)
+        #botao de registrar pressionado
+        
         self.retranslateUi(telareg)
         QtCore.QObject.connect(self.bvoltar, QtCore.SIGNAL(_fromUtf8("triggered()")), telareg.close)
         QtCore.QMetaObject.connectSlotsByName(telareg)
-
-        self.bregistar.clicked.connect(self.registro)
 
     def retranslateUi(self, telareg):
         telareg.setWindowTitle(_translate("telareg", "Registro", None))
@@ -281,6 +260,7 @@ class Ui_telareg(object):
         self.label_6.setText(_translate("telareg", "  Bairro", None))
         self.label_8.setText(_translate("telareg", "Nome do Restaurante", None))
         self.label_9.setText(_translate("telareg", "Descrição do Restaurante", None))
+        self.label_10.setText(_translate("telareg", "  Endereço", None))
         self.menuOpcoes.setTitle(_translate("telareg", "Opções", None))
         self.bvoltar.setText(_translate("telareg", "Voltar", None))
 

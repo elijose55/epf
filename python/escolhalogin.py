@@ -11,6 +11,12 @@ from PyQt4 import QtCore, QtGui
 from regcliente import Ui_regcliente 
 from telareg import Ui_telareg
 
+import json
+
+with open('dict.json','r') as cf:
+    d=json.load(cf)
+
+
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -28,9 +34,12 @@ except AttributeError:
 
 class Ui_escolhalogin(object):
 
+
+
+
     def cliente(self):
         self.regcliente = QtGui.QMainWindow()
-        self.ui= Ui_regcliente()
+        self.ui= Ui_regcliente(d)
         self.ui.setupUi(self.regcliente)
         
         self.regcliente.show()
@@ -114,7 +123,7 @@ if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
     escolhalogin = QtGui.QMainWindow()
-    ui = Ui_escolhalogin()
+    ui = Ui_escolhalogin(d)
     ui.setupUi(escolhalogin)
     escolhalogin.show()
     sys.exit(app.exec_())

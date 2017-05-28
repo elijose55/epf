@@ -6,6 +6,38 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+"""
+d={
+ "clientes": {
+  "": {
+   "nome": "elijose",
+   "senha": "",
+   "email": "elijose55",
+   "celular": "976678686",
+   "bairro": "juruce"
+  }
+ },
+ "cozinheiro": {
+  "a": {
+   "nome": "elijose",
+   "senha": "",
+   "email": "elijose55",
+   "celular": "976678686",
+   "restaurante": "asterix",
+   "cardapio": {
+   'bolo':[15,20,'Bolo de Cenoura'],
+   'arroz':[7,25,'Arroz Branco'],
+   'feijao':[8,24, 'Feijao Caseiro']
+   }
+   "bairro": "juruce",
+   "descricao": "Comida boa e caseira focada em massas e paes"
+  }
+ }
+}
+
+"""
+
+
 d={
     'clientes': {
     '':{
@@ -25,9 +57,10 @@ d={
     'senha': '',
     'bairro': 'juruce',
     'celular': '976678686',
+    'status': 'online',
     'restaurante': 'asterix',
     'descricao': 'Comida boa e caseira focada em massas e paes',
-    'cardapio': ''
+    'cardapio': [[15,20,'Bolo de Cenoura'],[7,25,'Arroz Branco'],[8,24, 'Feijao Caseiro']],
     }
       }
       }
@@ -39,6 +72,26 @@ from telareg import Ui_telareg
 from telacliente import Ui_telacliente
 from telafinalizar import Ui_telafinalizar
 from telacardapio import Ui_telacardapio
+import json
+
+"""
+class comida:
+        def __init__(self,preco,tempo,nome):
+            self.p=preco
+            self.t=tempo
+            self.n=nome
+
+
+bolo = comida(15,20,'Bolo de Cenoura')
+arroz = comida(7,25,'Arroz Branco')
+feijao = comida(8,24,'Feijao Carioca')
+"""
+
+
+
+with open('dict.json','r') as cf:
+    d=json.load(cf)
+
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -55,8 +108,7 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_tlogin(object):
-    def __init__ (self,d):
-        self.d=d
+
 
 
     def lerro(self):
@@ -73,11 +125,15 @@ class Ui_tlogin(object):
         self.ui= Ui_escolhalogin()
         self.ui.setupUi(self.escolhareg)
         self.escolhareg.show()
+        self.setVisible(True)
 
 
 
 
     def logincheck(self):
+
+        with open('dict.json','r') as cf:
+            d=json.load(cf)
         ##checar o login e senha depois de clicar no botao de login
         username = self.llogin.text()
         username = str(username)
@@ -88,7 +144,10 @@ class Ui_tlogin(object):
             if d['cozinheiro'][username]['senha']==password:
                 ##abrir tela de cardapio do cozinheiro deposi do login do cozinheiro
                 print('Login Bem-Sucedido')
-                tlogin.close()
+                tlogin = QtGui.QMainWindow()
+                ui = Ui_tlogin()
+                ui.setupUi(tlogin)
+                ##tlogin.close
                 self.cardapio = QtGui.QMainWindow()
                 self.ui= Ui_telacardapio()
                 self.ui.setupUi(self.cardapio)
@@ -99,9 +158,8 @@ class Ui_tlogin(object):
             if d['clientes'][username]['senha']==password:
             ##abrir tela de pedidos depois do login do cliente
                 print('Login Bem-Sucedido')
-                tlogin.close()
                 self.cliente = QtGui.QMainWindow()
-                self.ui= Ui_telacliente()
+                self.ui= Ui_telacliente(username)
                 self.ui.setupUi(self.cliente)
                 
                 self.cliente.show()
@@ -116,6 +174,11 @@ class Ui_tlogin(object):
 
 
     def setupUi(self, tlogin):
+
+        def __init__(self):
+            with open('arquivo.json','r') as cf:
+                dict=json.load(cf)
+
         tlogin.setObjectName(_fromUtf8("tlogin"))
         tlogin.resize(666, 506)
         tlogin.setMinimumSize(QtCore.QSize(666, 506))
@@ -235,7 +298,7 @@ if __name__ == "__main__":
 
     app = QtGui.QApplication(sys.argv)
     tlogin = QtGui.QMainWindow()
-    ui = Ui_tlogin(d)
+    ui = Ui_tlogin()
     ui.setupUi(tlogin)
     tlogin.show()
     sys.exit(app.exec_())
