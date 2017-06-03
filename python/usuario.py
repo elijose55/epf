@@ -32,6 +32,8 @@ class Ui_usuario(object):
 
     def __init__(self,c):
         self.c = c
+        with open('dict.json','r') as cf:
+            d=json.load(cf)
 
     def trocarcel(self):
         cel = self.tcelular.text()
@@ -92,6 +94,7 @@ class Ui_usuario(object):
             json.dump(d, file, indent=1)
         self.tendereco.clear()
         self.ENDERECO.setText(d['cozinheiro'][self.c]['endereco'])
+        
     def setupUi(self, usuario):
         usuario.setObjectName(_fromUtf8("usuario"))
         usuario.resize(897, 648)

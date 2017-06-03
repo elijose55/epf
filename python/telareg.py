@@ -7,8 +7,10 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-
+from mapa2 import imail
+import requests
 import json
+
 
 with open('dict.json','r') as cf:
     d=json.load(cf)
@@ -28,6 +30,9 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_telareg(object):
+    def __init__(self):
+        with open('dict.json','r') as cf:
+            d=json.load(cf)
 
     def erro(self):
         msg=QtGui.QMessageBox()
@@ -42,6 +47,8 @@ class Ui_telareg(object):
             x = str(x)
             if x not in d['cozinheiro'] and x not in d['clientes']:
                 d['cozinheiro'][x]={}
+
+                d['cozinheiro'][x]['login']=x
 
                 temp = self.tnome.text()
                 temp = str(temp)
@@ -61,6 +68,12 @@ class Ui_telareg(object):
                 d['cozinheiro'][x]['endereco']=temp
 
                 temp = self.tsenha.text()
+                temp = str(temp)
+                temp = temp.lower()
+                temp = temp.lstrip()
+                temp=temp.title()
+                temp=temp.split()
+                temp=' '.join(temp)
                 temp = str(temp)
                 d['cozinheiro'][x]['senha']=temp
 
@@ -87,24 +100,27 @@ class Ui_telareg(object):
 
                 d['cozinheiro'][x]['status']='offline'
 
+                d['cozinheiro'][x]['cardapio'] = []
+
+                d['cozinheiro'][x]['pedido'] = {}
+
                 with open('dict.json','w') as file:
                     json.dump(d, file, indent=1)
+
 
                 msg=QtGui.QMessageBox()
                 msg.setIcon(QtGui.QMessageBox.Information)
                 msg.setWindowTitle('Aviso')
-                msg.setText('Registro Bem-Sucedido')
+                msg.setText('Registro Realizado. Aguarde o Email de Confirmação')
                 msg.setStandardButtons(QtGui.QMessageBox.Ok)
                 msg.exec_()
 
-                print (d)
+                imail(d['cozinheiro'][x]['email'])
 
-                self.telalog = QtGui.QMainWindow()
-                self.ui= Ui_tlogin()
-                self.ui.setupUi(self.telalog)
-                self.telalog.show()
-                self.telareg.close()
-                print(d)
+
+
+                QtGui.QMainWindow.close(self.telareg)
+
 
 
 
@@ -119,6 +135,7 @@ class Ui_telareg(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("minilogo.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         telareg.setWindowIcon(icon)
+        self.telareg = telareg
         self.centralwidget = QtGui.QWidget(telareg)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.label = QtGui.QLabel(self.centralwidget)

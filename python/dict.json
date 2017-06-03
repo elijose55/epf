@@ -1,53 +1,6 @@
 {
- "clientes": {
-  "": {
-   "bairro": "Juruce",
-   "nome": "elijose",
-   "temp": [],
-   "senha": "",
-   "email": "elijose55@hotmail.com",
-   "celular": "11976678686"
-  }
- },
  "cozinheiro": {
-  "a": {
-   "restaurante": "asterix",
-   "status": "online",
-   "bairro": "Juruce",
-   "nome": "elijose",
-   "descricao": "Comida boa e caseira focada em massas e paes",
-   "senha": "",
-   "endereco": "Rua Juruce 655",
-   "email": "elijose55@hotmail.com",
-   "cardapio": [
-    [
-     15,
-     20,
-     "Bolo de Cenoura"
-    ],
-    [
-     7,
-     25,
-     "Arroz Branco"
-    ],
-    [
-     8,
-     24,
-     "Feijao Caseiro"
-    ]
-   ],
-   "celular": "976678686"
-  },
-  "e": {
-   "restaurante": "legal",
-   "status": "offline",
-   "bairro": "Juruce",
-   "nome": "",
-   "descricao": "comida",
-   "senha": "",
-   "email": "",
-   "endereco": "Rua juruce 655",
-   "celular": ""
-  }
+ },
+ "clientes": {
  }
 }

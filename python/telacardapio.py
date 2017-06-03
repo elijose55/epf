@@ -8,12 +8,13 @@
 
 from PyQt4 import QtCore, QtGui
 from usuario import Ui_usuario
+from telapedidos import Ui_telapedidos
 import json
 
 with open('dict.json','r') as cf:
     d=json.load(cf)
 
-x='a'  ##colocar aqui o nome do usuario que entrou
+
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -32,20 +33,29 @@ except AttributeError:
 
 class Ui_telacardapio(object):
 
-    def __init__ (self):
-        self.ltemp=[]
+    def __init__ (self,c):
+        self.c = c
+        with open('dict.json','r') as cf:
+            d=json.load(cf)
 
-    def usuario(self):
+    def pedidos (self): #abrir tela de pedidos do cozinheiro
+
+        self.ped = QtGui.QMainWindow()
+        self.ui= Ui_telapedidos(self.c)
+        self.ui.setupUi(self.ped)
+        self.ped.show()
+        QtGui.QMainWindow.close(self.telacardapio)
+
+    def usuario(self): #abrir tela de dados sobre o usuario
 
         self.user = QtGui.QMainWindow()
-        self.ui= Ui_usuario(x)
+        self.ui= Ui_usuario(self.c)
         self.ui.setupUi(self.user)
         self.user.show()
-        self.Ui_usuariocliente.close()
 
-    def criar(self):
+    def criar(self): #metodo para criar um prato e adiciona-lo no cardapio do cozinheiro
 
-        pt = self.tprato.text()
+        pt = self.tprato.text()#pega os textos escritos nas caixas de texto
         pt = str(pt)
         pr = self.tpreco.text()
         pr = pr.replace(',', '.')
@@ -53,24 +63,27 @@ class Ui_telacardapio(object):
 
         tt = self.ttempo.text()
         tt = int(tt)
-        lfood = [pr,tt,pt]
+        lfood = [pr,tt,pt] #cria lista com os dados sobre a comida adiconada
 
-        (d['cozinheiro'][x]['cardapio']).append(lfood)
+        (d['cozinheiro'][self.c]['cardapio']).append(lfood) #adciona essa lista a lista de cardapio geral do cozinheiro
 
-        print(d['cozinheiro'][x]['cardapio'])
 
         self.textBrowser.setText('')
+
+        self.tprato.clear()
+        self.tpreco.clear()
+        self.ttempo.clear()
 
 
         with open('dict.json','w') as file:
             json.dump(d, file, indent=1)
 
-        lc=d['cozinheiro'][x]['cardapio']
+        lc=d['cozinheiro'][self.c]['cardapio']
 
 
 
 
-        for i in lc:
+        for i in lc: #exibe as comidas do cardapio ja adcionadas na caixa de texto do cardapio
             objeto = i
 
             
@@ -83,20 +96,26 @@ class Ui_telacardapio(object):
             self.textBrowser.append('{0} \n Preço: R${1:.2f} \n Tempo: {2} minutos \n' .format(nn,pp,tt))
 
 
-    def clean(self):
+    def clean(self): #apaga o cardapio
 
         self.textBrowser.setText('')
-        d['cozinheiro'][x]['cardapio']=[]
+        d['cozinheiro'][self.c]['cardapio']=[]
 
-    def ativar(self):
+        with open('dict.json','w') as file:
+            json.dump(d, file, indent=1)
 
-        if d['cozinheiro'][x]['status'] == 'online' :
-            self.blimpar_2.setText('Ativar')
-            d['cozinheiro'][x]['status'] = 'offline'
+    def ativar(self): #faz o cozinheiro entrar ou sair da ativa e ficar disponivel para receber pedidos de clientes quando o botao ativar for clicado
 
-        elif d['cozinheiro'][x]['status'] == 'offline' :
-            self.blimpar_2.setText('Desativar')
-            d['cozinheiro'][x]['status'] = 'online'
+        if d['cozinheiro'][self.c]['status'] == 'online' :
+            self.blimpar_2.setText('Ativar') #troca o texto do botao quando ele for clicado
+            d['cozinheiro'][self.c]['status'] = 'offline'
+
+        elif d['cozinheiro'][self.c]['status'] == 'offline' :
+            self.blimpar_2.setText('Desativar') #troca o texto do botao quando ele for clicado
+            d['cozinheiro'][self.c]['status'] = 'online'
+
+        with open('dict.json','w') as file:
+            json.dump(d, file, indent=1)
 
 
 
@@ -111,6 +130,7 @@ class Ui_telacardapio(object):
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("minilogo.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         telacardapio.setWindowIcon(icon)
         telacardapio.setInputMethodHints(QtCore.Qt.ImhNone)
+        self.telacardapio = telacardapio
         self.centralwidget = QtGui.QWidget(telacardapio)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.bcardapio = QtGui.QPushButton(self.centralwidget)
@@ -204,6 +224,12 @@ class Ui_telacardapio(object):
         font.setPointSize(11)
         self.textBrowser.setFont(font)
 
+        if d['cozinheiro'][self.c]['status'] == 'online' :
+            self.blimpar_2.setText('Desativar')
+
+        elif d['cozinheiro'][self.c]['status'] == 'offline' :
+            self.blimpar_2.setText('Ativar')
+
         self.bcardapio.clicked.connect(self.criar)
 
         self.blimpar.clicked.connect(self.clean)
@@ -211,6 +237,23 @@ class Ui_telacardapio(object):
         self.blimpar_2.clicked.connect(self.ativar)
 
         self.busuario.triggered.connect(self.usuario)
+
+        self.birpedidos.clicked.connect(self.pedidos)
+
+
+############## exibe as comidas ja adicionadas no cardapio
+        lc=d['cozinheiro'][self.c]['cardapio']
+
+
+
+
+        for i in lc: #exibe as comidas do cardapio ja adcionadas na caixa de texto do cardapio
+            objeto = i
+            nn = objeto[2] #nome
+            pp = objeto[0] #preco
+            tt = objeto[1] #tempo de preparo
+            self.textBrowser.append('{0} \n Preço: R${1:.2f} \n Tempo: {2} minutos \n' .format(nn,pp,tt))
+####################
 
         self.retranslateUi(telacardapio)
         QtCore.QObject.connect(self.bsair, QtCore.SIGNAL(_fromUtf8("triggered()")), telacardapio.close)

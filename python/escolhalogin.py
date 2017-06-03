@@ -34,22 +34,21 @@ except AttributeError:
 
 class Ui_escolhalogin(object):
 
-
-
-
     def cliente(self):
         self.regcliente = QtGui.QMainWindow()
-        self.ui= Ui_regcliente(d)
+        self.ui= Ui_regcliente()
         self.ui.setupUi(self.regcliente)
         
         self.regcliente.show()
         self.escolhalogin.close()
+        QtGui.QMainWindow.close(self.escolhalogin)
 
     def cozinheiro(self):
         self.regcoz = QtGui.QMainWindow()
         self.ui= Ui_telareg()
         self.ui.setupUi(self.regcoz)
         self.regcoz.show()
+        QtGui.QMainWindow.close(self.escolhalogin)
 
 
     def setupUi(self, escolhalogin):
@@ -60,6 +59,7 @@ class Ui_escolhalogin(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("../minilogo.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         escolhalogin.setWindowIcon(icon)
+        self.escolhalogin = escolhalogin
         self.centralwidget = QtGui.QWidget(escolhalogin)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.bcliente = QtGui.QPushButton(self.centralwidget)

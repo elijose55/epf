@@ -7,7 +7,12 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+from telapedidos import Ui_telapedidos
+from espera import Ui_MainWindow
 import json
+
+with open('dict.json','r') as cf:
+    d=json.load(cf)
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -30,12 +35,35 @@ class Ui_telafinalizar(object):
         self.T=0
         self.P=0
         self.c=c
-
+        self.lista = []
 
     def fim(self):
-        d['clientes'][self.x]['pedido']=lc
-        d['cozinheiro'][self.c]['pedido']=lc
+        d['clientes'][self.x]['pedido'] = self.lista
+        d['cozinheiro'][self.c]['pedido'][self.x] = self.lista
+
+        d['clientes'][self.x]['temp'] = []
+
+
+        with open('dict.json','w') as file:
+            json.dump(d, file, indent=1)
+
+
+        msg=QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Information)
+        msg.setWindowTitle('Aviso')
+        msg.setText('Seu pedido foi confirmado')
+        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+        msg.exec_()    
+
         
+        with open('dict.json','w') as file:
+            json.dump(d, file, indent=1)
+
+        self.wait = QtGui.QMainWindow()
+        self.ui= Ui_MainWindow(self.x, self.c)
+        self.ui.setupUi(self.wait)
+        self.wait.show()
+        QtGui.QMainWindow.close(self.telafinalizar)
 
 
     def setupUi(self, telafinalizar):
@@ -46,6 +74,7 @@ class Ui_telafinalizar(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("minilogo.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         telafinalizar.setWindowIcon(icon)
+        self.telafinalizar = telafinalizar
         self.carrinhoww = QtGui.QTextBrowser(telafinalizar)
         self.carrinhoww.setGeometry(QtCore.QRect(100, 170, 301, 361))
         font = QtGui.QFont()
@@ -53,9 +82,6 @@ class Ui_telafinalizar(object):
         font.setPointSize(10)
         self.carrinhoww.setFont(font)
         self.carrinhoww.setObjectName(_fromUtf8("carrinhoww"))
-        self.bvoltar = QtGui.QPushButton(telafinalizar)
-        self.bvoltar.setGeometry(QtCore.QRect(80, 600, 93, 28))
-        self.bvoltar.setObjectName(_fromUtf8("bvoltar"))
         self.bpedir = QtGui.QPushButton(telafinalizar)
         self.bpedir.setGeometry(QtCore.QRect(510, 600, 93, 28))
         self.bpedir.setObjectName(_fromUtf8("bpedir"))
@@ -106,11 +132,13 @@ class Ui_telafinalizar(object):
         with open('dict.json','r') as cf:
             d=json.load(cf)
 
-        lc = d['clientes'][self.x]['temp']
 
 
+        self.lista = d['clientes'][self.x]['temp'][:]
+        print(self.lista)
+        print('1')
 
-        for i in lc:
+        for i in self.lista:
             objeto = i
             nn=objeto[2] #nome
             pp=objeto[0] #preco
@@ -127,15 +155,12 @@ class Ui_telafinalizar(object):
 
         self.bpedir.clicked.connect(self.fim)
 
-##############
 
         self.retranslateUi(telafinalizar)
-        QtCore.QObject.connect(self.bvoltar, QtCore.SIGNAL(_fromUtf8("clicked()")), telafinalizar.close)
         QtCore.QMetaObject.connectSlotsByName(telafinalizar)
 
     def retranslateUi(self, telafinalizar):
         telafinalizar.setWindowTitle(_translate("telafinalizar", "PyFood", None))
-        self.bvoltar.setText(_translate("telafinalizar", "Voltar", None))
         self.bpedir.setText(_translate("telafinalizar", "Pedir", None))
         self.label_5.setText(_translate("telafinalizar", "Finalizar Pedido", None))
 
@@ -144,6 +169,7 @@ class Ui_telafinalizar(object):
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
+
     telafinalizar = QtGui.QDialog()
     ui = Ui_telafinalizar()
     ui.setupUi(telafinalizar)

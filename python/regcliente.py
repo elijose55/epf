@@ -29,6 +29,9 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_regcliente(object):
+    def __init__(self):
+        with open('dict.json','r') as cf:
+            d=json.load(cf)
 
 
     def erro(self):
@@ -44,6 +47,8 @@ class Ui_regcliente(object):
             x = str(x)
             if x not in d['clientes'] and x not in d['cozinheiro']:
                 d['clientes'][x]={}
+
+                d['clientes'][x]['login']=x
 
                 temp = self.tnome.text()
                 temp = str(temp)
@@ -68,6 +73,8 @@ class Ui_regcliente(object):
                 temp = str(temp)
                 d['clientes'][x]['celular']=temp
 
+                d['clientes'][x]['pedido']=[]
+
                 with open('dict.json','w') as file:
                     json.dump(d, file, indent=1)
 
@@ -78,11 +85,7 @@ class Ui_regcliente(object):
                 msg.setStandardButtons(QtGui.QMessageBox.Ok)
                 msg.exec_()
 
-                self.telalog = QtGui.QMainWindow()
-                self.ui= Ui_tlogin()
-                self.ui.setupUi(self.telalog)
-                self.telalog.show()
-                self.telareg.close()
+                QtGui.QMainWindow.close(self.regcliente)
 
             else:
                 self.erro()
@@ -97,6 +100,7 @@ class Ui_regcliente(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("minilogo.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         regcliente.setWindowIcon(icon)
+        self.regcliente = regcliente
         self.centralwidget = QtGui.QWidget(regcliente)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.bregistar = QtGui.QPushButton(self.centralwidget)

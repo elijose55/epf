@@ -32,6 +32,8 @@ except AttributeError:
 class Ui_usuariocliente(object):
 	def __init__(self,x):
 		self.x = x
+		with open('dict.json','r') as cf:
+			d=json.load(cf)
 
 	def trocarcel(self):
 		cel = self.tcelular.text()

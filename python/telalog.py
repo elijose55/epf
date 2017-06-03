@@ -74,18 +74,9 @@ from telafinalizar import Ui_telafinalizar
 from telacardapio import Ui_telacardapio
 import json
 
-"""
-class comida:
-        def __init__(self,preco,tempo,nome):
-            self.p=preco
-            self.t=tempo
-            self.n=nome
 
 
-bolo = comida(15,20,'Bolo de Cenoura')
-arroz = comida(7,25,'Arroz Branco')
-feijao = comida(8,24,'Feijao Carioca')
-"""
+
 
 
 
@@ -109,9 +100,13 @@ except AttributeError:
 
 class Ui_tlogin(object):
 
+    def __init__ (self):
+        with open('dict.json','r') as cf:
+            d=json.load(cf)
 
 
-    def lerro(self):
+
+    def lerro(self): ##aviso de login invalido
         msg=QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Warning)
         msg.setWindowTitle('Aviso')
@@ -125,51 +120,49 @@ class Ui_tlogin(object):
         self.ui= Ui_escolhalogin()
         self.ui.setupUi(self.escolhareg)
         self.escolhareg.show()
-        self.setVisible(True)
 
 
 
 
-    def logincheck(self):
+
+    def logincheck(self): ##checar o login e senha no dicionario
 
         with open('dict.json','r') as cf:
             d=json.load(cf)
-        ##checar o login e senha depois de clicar no botao de login
         username = self.llogin.text()
         username = str(username)
         password = self.lsenha.text()
         password = str(password)
 
-        if username in d['cozinheiro']:
+        if username in d['cozinheiro']: ##login de um cozinheiro
             if d['cozinheiro'][username]['senha']==password:
-                ##abrir tela de cardapio do cozinheiro deposi do login do cozinheiro
-                print('Login Bem-Sucedido')
-                tlogin = QtGui.QMainWindow()
-                ui = Ui_tlogin()
-                ui.setupUi(tlogin)
-                ##tlogin.close
+
+                    ##abrir tela de cardapio do cozinheiro depois do login do cozinheiro
                 self.cardapio = QtGui.QMainWindow()
-                self.ui= Ui_telacardapio()
+                self.ui= Ui_telacardapio(username)
                 self.ui.setupUi(self.cardapio)
-
                 self.cardapio.show()
+                QtGui.QMainWindow.close(self.tlogin)
 
-        elif username in d['clientes']:
+        elif username in d['clientes']: ##login do cliente
             if d['clientes'][username]['senha']==password:
-            ##abrir tela de pedidos depois do login do cliente
-                print('Login Bem-Sucedido')
+
+                d['clientes'][username]['pedido'] = []
+
+                with open('dict.json','w') as file:
+                    json.dump(d, file, indent=1)
+
+                    #abrir tela de espera do cliente
                 self.cliente = QtGui.QMainWindow()
                 self.ui= Ui_telacliente(username)
                 self.ui.setupUi(self.cliente)
-                
                 self.cliente.show()
+                QtGui.QMainWindow.close(self.tlogin)
             else:
-                print('Login ou Senha errados')
-                self.lerro()
+                self.lerro() ##funcao que mostra mensagem de login errado
         else:
-            print('Login ou Senha errados')
             self.lerro()
-
+        
         
 
 
@@ -192,10 +185,11 @@ class Ui_tlogin(object):
         tlogin.setAutoFillBackground(True)
         tlogin.setStyleSheet(_fromUtf8(""))
         tlogin.setUnifiedTitleAndToolBarOnMac(True)
+        self.tlogin = tlogin
         self.centralwidget = QtGui.QWidget(tlogin)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.widget = QtGui.QWidget(self.centralwidget)
-        self.widget.setGeometry(QtCore.QRect(230, 110, 173, 187))
+        self.widget.setGeometry(QtCore.QRect(230, 110, 173, 230))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Trebuchet MS"))
         font.setPointSize(9)
@@ -277,9 +271,9 @@ class Ui_tlogin(object):
         QtCore.QMetaObject.connectSlotsByName(tlogin)
 
 
-        self.bregistrar.clicked.connect(self.registrocheck)
+        self.bregistrar.clicked.connect(self.registrocheck) ##conectar botao de registro com a funcao de abrir tela de escolha de registro
 
-        self.blogin.clicked.connect(self.logincheck)
+        self.blogin.clicked.connect(self.logincheck) ##conectar botao de login com a funcao de checar login
 
     def retranslateUi(self, tlogin):
         tlogin.setWindowTitle(_translate("tlogin", "PyFood", None))
